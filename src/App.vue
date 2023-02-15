@@ -1,8 +1,31 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useLoading } from '@/utils/use';
+
+const { loadingVisible } = useLoading();
+</script>
 
 <template>
-  <div></div>
-  <div></div>
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
+
+  <teleport to="body">
+    <van-loading v-show="loadingVisible" class="loading"></van-loading>
+  </teleport>
 </template>
 
-<style scoped></style>
+<style lang="less" scoped>
+.loading {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+</style>

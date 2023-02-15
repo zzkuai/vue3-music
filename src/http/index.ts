@@ -21,8 +21,8 @@ instance.interceptors.response.use(
 
 function getRequestInfo(isPost: boolean, data: RequestData) {
   const headers = isPost ? { 'Content-Type': 'application/json' } : {};
-  data = isPost ? { data } : { params: data };
   data.timestamp = Date.now();
+  data = isPost ? { data } : { params: data };
 
   return {
     headers,
@@ -34,6 +34,23 @@ async function http<T>(method: Method, url: string, data: RequestData = {}) {
   const isPost = method.toUpperCase() === 'POST';
   const info = getRequestInfo(isPost, data);
 
+  if (import.meta.env.DEV) {
+    console.log('---- request data ----', info);
+
+    // return new Promise((resolve) => {
+    //   setTimeout(() => {
+    //     import('@/mocks/index').then((res) => {
+    //       const { default: data } = res;
+    //       const u = url as keyof typeof data;
+    //       if (import.meta.env.DEV) {
+    //         console.log('---- response data ----', data[u]);
+    //       }
+    //       return resolve(data[u]);
+    //     });
+    //   }, 500);
+    // });
+  }
+
   const res = await instance.request<ResponseData<T>>({
     method,
     url,
@@ -41,6 +58,10 @@ async function http<T>(method: Method, url: string, data: RequestData = {}) {
   });
 
   const { code, message, msg, data: resData, ...props } = res.data;
+
+  if (import.meta.env.DEV) {
+    console.log('---- response data ----', res.data);
+  }
 
   if (RESPONSE_SUCCESS_CODE.includes(code)) {
     return Promise.resolve({ code, message, ...resData, ...props });

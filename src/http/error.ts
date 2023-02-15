@@ -1,6 +1,6 @@
 import { ResponseData } from '@/typings/http';
 import { AxiosError } from 'axios';
-import { showFailToast } from 'vant';
+import { showToast } from 'vant';
 
 const REQUEST_ERROR_MESSAGE = '请求失败，请稍后重试';
 const REQUEST_TIMEOUT_ERROR = '请求超时，请稍后重试';
@@ -17,7 +17,7 @@ export function errorToast(error: string = REQUEST_ERROR_MESSAGE) {
     message = error;
   }
 
-  showFailToast({
+  showToast({
     message,
     position: 'bottom',
   });

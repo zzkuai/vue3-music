@@ -1,0 +1,68 @@
+* {
+  &,
+  &::before,
+  &::after {
+    box-sizing: border-box;
+  }
+}
+
+html {
+  font-size: 16px;
+  user-select: none;
+  color: var(--text-color);
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+body,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul {
+  margin: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+}
+
+ul,
+li {
+  padding: 0;
+  list-style-type: none;
+}
+
+button,
+input {
+  padding: 0;
+  outline: none;
+  border: none;
+  font-size: inherit;
+  letter-spacing: 1px;
+}
+
+input {
+  caret-color: var(--theme-color);
+
+  &::placeholder {
+    opacity: 0.5;
+  }
+}
+
+:root {
+  --van-toast-position-top-distance: 5%;
+  --van-loading-spinner-color: var(--theme-color);
+}
