@@ -3,7 +3,7 @@ import { homeRoutes } from './home';
 import { loginRoutes } from './login';
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('vue3-music'),
   routes: [
     {
       path: '/',
