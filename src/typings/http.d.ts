@@ -9,3 +9,5 @@ export interface ResponseData<T> {
   msg: string;
   data: T;
 }
+
+export type ResponseDataWithoutData = Omit<ResponseData<T>, 'data'>;

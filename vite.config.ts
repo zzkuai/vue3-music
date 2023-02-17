@@ -38,7 +38,7 @@ export default defineConfig({
   },
 
   server: {
-    host: '192.168.0.103',
+    host: '192.168.0.108',
     proxy: {
       '/music-api': {
         target: ' http://localhost:3000',

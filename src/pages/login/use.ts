@@ -1,9 +1,9 @@
-import { computed, ref, inject, watch } from 'vue';
+import { computed, ref, inject, watch, onDeactivated } from 'vue';
 import { throttle } from 'lodash-es';
 import { showToast } from 'vant';
 import { useCountDown } from '@vant/use';
 import { PHONE_REG } from '@/utils/regexp';
-import { sendSms, login } from '@/http/api/login';
+import { sendSms, login, getQrKey, getQrCode, qrLogin } from '@/http/api/login';
 import { useRouter } from 'vue-router';
 import { KEY_SET_LOADING } from '@/utils/keys';
 import { SetLoading } from '@/typings/common';
@@ -132,4 +132,59 @@ export function useLogin() {
   });
 
   return { code };
+}
+
+export function useQrLogin() {
+  let timer: null | NodeJS.Timeout;
+  const qrImg = ref('');
+  const qrVisible = ref(false);
+  const invalidate = ref(false);
+  const router = useRouter();
+  const setLoading = inject(KEY_SET_LOADING) as SetLoading;
+
+  async function getQrImg() {
+    setLoading(true);
+    try {
+      invalidate.value = false;
+      const res = await getQrKey();
+      const data = await getQrCode(res.unikey);
+      qrImg.value = data.qrimg;
+      checkStatus(res.unikey);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function checkStatus(key: string) {
+    timer = setInterval(() => {
+      qrLogin(key).then((res) => {
+        const { code, message } = res;
+        if (code === 800 || code === 803) {
+          clear();
+          showToast(message);
+        }
+        if (code === 800) {
+          invalidate.value = true;
+        }
+        if (code === 803) {
+          router.back();
+        }
+      });
+    }, 1000);
+  }
+
+  function clear() {
+    timer && clearInterval(timer);
+    qrImg.value = '';
+    timer = null;
+  }
+
+  function retry() {
+    if (!invalidate.value) return;
+    getQrImg();
+  }
+
+  onDeactivated(clear);
+
+  return { qrImg, qrVisible, invalidate, getQrImg, clear, retry };
 }

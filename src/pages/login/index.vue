@@ -4,9 +4,29 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { Popover } from 'vant';
+import { throttle } from 'lodash-es';
+import 'vant/es/popover/style';
 import ComButton from '@/components/ComButton.vue';
-import { useSendSms } from './use';
-const { phone, phoneEl, phoneFocus, clear, clearVisible, login } = useSendSms();
+import { useSendSms, useQrLogin } from './use';
+const {
+  phone,
+  phoneEl,
+  phoneFocus,
+  clear: reset,
+  clearVisible,
+  login,
+} = useSendSms();
+const { qrImg, qrVisible, getQrImg, invalidate, clear, retry } = useQrLogin();
+
+const handleQrcodeClick = throttle(
+  function () {
+    if (qrVisible.value) return;
+    getQrImg();
+  },
+  200,
+  { trailing: false }
+);
 </script>
 <template>
   <div class="login">
@@ -27,12 +47,42 @@ const { phone, phoneEl, phoneFocus, clear, clearVisible, login } = useSendSms();
         v-show="clearVisible"
         class="login-clear"
         @mousedown.prevent
-        @click="clear"
+        @click="reset"
       >
-        <img class="login-img" src="@/images/common/clear.png" />
+        <img class="clear-img" src="@/images/common/clear.png" />
       </span>
     </div>
     <ComButton @click="login">下一步</ComButton>
+    <div class="login-qrcode">
+      <Popover
+        v-model:show="qrVisible"
+        :close-on-click-action="false"
+        @closed="clear"
+      >
+        <template #default>
+          <div class="qrcode" @click="retry">
+            <span v-if="invalidate">点击重试</span>
+            <template v-else>
+              <img
+                v-show="qrImg"
+                class="qrcode-img"
+                :src="qrImg"
+                alt="qrcode"
+              />
+              <span class="qrcode-tip">请打开网易云音乐APP，扫码进行登录</span>
+            </template>
+          </div>
+        </template>
+        <template #reference>
+          <img
+            class="qrcode-icon"
+            src="./images/qrcode.png"
+            alt="qrcode"
+            @click="handleQrcodeClick"
+          />
+        </template>
+      </Popover>
+    </div>
   </div>
 </template>
 <style scoped lang="less">
@@ -74,8 +124,42 @@ const { phone, phoneEl, phoneFocus, clear, clearVisible, login } = useSendSms();
     padding: 5px;
   }
 
-  &-img {
+  .clear-img {
     .wh(16px);
+  }
+
+  &-qrcode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 80px;
+  }
+
+  .qrcode-icon {
+    .wh(80px);
+    padding: 10px;
+  }
+}
+</style>
+
+<style lang="less">
+@import '@/styles/mixin.less';
+
+.qrcode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: var(--tip-color);
+  padding: 5px 10px 15px;
+
+  &-img {
+    display: block;
+    .wh(200px);
+  }
+
+  &-tip {
+    font-size: 12px;
   }
 }
 </style>

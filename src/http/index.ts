@@ -1,4 +1,8 @@
-import { RequestData, ResponseData } from '@/typings/http';
+import {
+  RequestData,
+  ResponseData,
+  ResponseDataWithoutData,
+} from '@/typings/http';
 import axios, { Method } from 'axios';
 import { handleResponseError } from './error';
 
@@ -35,17 +39,24 @@ async function http<T>(method: Method, url: string, data: RequestData = {}) {
   const info = getRequestInfo(isPost, data);
 
   if (import.meta.env.DEV) {
-    console.log('---- request data ----', info);
+    console.log('---- request data ----', url, info);
 
-    // return new Promise((resolve) => {
+    // return new Promise<ResponseDataWithoutData & T>((resolve) => {
     //   setTimeout(() => {
     //     import('@/mocks/index').then((res) => {
     //       const { default: data } = res;
     //       const u = url as keyof typeof data;
+    //       const { data: resData, ...props } = data[
+    //         u
+    //       ] as unknown as ResponseData<T>;
+    //       const result = {
+    //         ...resData,
+    //         ...props,
+    //       };
     //       if (import.meta.env.DEV) {
-    //         console.log('---- response data ----', data[u]);
+    //         console.log('---- response data ----', url, data[u]);
     //       }
-    //       return resolve(data[u]);
+    //       return resolve(result);
     //     });
     //   }, 500);
     // });
@@ -60,11 +71,17 @@ async function http<T>(method: Method, url: string, data: RequestData = {}) {
   const { code, message, msg, data: resData, ...props } = res.data;
 
   if (import.meta.env.DEV) {
-    console.log('---- response data ----', res.data);
+    console.log('---- response data ----', url, res.data);
   }
 
   if (RESPONSE_SUCCESS_CODE.includes(code)) {
-    return Promise.resolve({ code, message, ...resData, ...props });
+    return Promise.resolve({
+      code,
+      msg,
+      message,
+      ...resData,
+      ...props,
+    });
   } else {
     handleResponseError(new Error(message || msg));
     return Promise.reject(new Error(message || msg));
