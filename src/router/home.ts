@@ -4,6 +4,9 @@ export const homeRoutes: RouteRecordRaw[] = [
   {
     path: '/home',
     name: 'Home',
+    meta: {
+      tab: true,
+    },
     component: () => import('@/pages/home/index.vue'),
   },
 ];

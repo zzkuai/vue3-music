@@ -19,6 +19,15 @@ body,
   height: 100%;
 }
 
+#app {
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+}
+
 body,
 p,
 h1,
@@ -37,6 +46,7 @@ h4,
 h5,
 h6 {
   font-weight: 500;
+  font-size: inherit;
 }
 
 ul,

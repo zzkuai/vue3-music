@@ -17,10 +17,7 @@ export function errorToast(error: string = REQUEST_ERROR_MESSAGE) {
     message = error;
   }
 
-  showToast({
-    message,
-    position: 'bottom',
-  });
+  showToast(message);
 }
 
 export function handleResponseError(

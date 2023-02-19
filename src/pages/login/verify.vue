@@ -23,10 +23,10 @@ onMounted(() => {
 </script>
 <template>
   <div class="verify">
-    <h2 class="verify-title">请输入验证码</h2>
-    <div class="verify-tip">
+    <h2>请输入验证码</h2>
+    <div class="verify-tip ft-12">
       <span>已发送至 {{ maskPhone }}</span>
-      <span class="send" :class="{ active: !isCounting }" @click="reSend">
+      <span class="send ft-14" :class="{ active: !isCounting }" @click="reSend">
         {{ text }}
       </span>
     </div>
@@ -56,21 +56,14 @@ onMounted(() => {
 .verify {
   padding: 30px 20px 0 20px;
 
-  &-title {
-    font-size: 16px;
-  }
-
   &-tip {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 10px;
-    font-size: 12px;
     color: var(--tip-color);
 
     .send {
-      font-size: 14px;
-
       &.active {
         color: var(--link-color);
       }

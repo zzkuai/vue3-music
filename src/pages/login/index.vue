@@ -30,14 +30,14 @@ const handleQrcodeClick = throttle(
 </script>
 <template>
   <div class="login">
-    <h2 class="login-title">登录体验更多精彩</h2>
-    <span class="login-tip">未注册手机号登录后将自动创建账号</span>
+    <h2>登录体验更多精彩</h2>
+    <span class="login-tip ft-12">未注册手机号登录后将自动创建账号</span>
     <div class="login-phone">
       <input
         ref="phoneEl"
         v-model="phone"
         maxlength="11"
-        class="login-input"
+        class="login-input ft-14"
         type="tel"
         placeholder="请输入手机号"
         @focus="phoneFocus = true"
@@ -69,7 +69,7 @@ const handleQrcodeClick = throttle(
                 :src="qrImg"
                 alt="qrcode"
               />
-              <span class="qrcode-tip">请打开网易云音乐APP，扫码进行登录</span>
+              <span class="ft-12">请打开网易云音乐APP，扫码进行登录</span>
             </template>
           </div>
         </template>
@@ -91,13 +91,8 @@ const handleQrcodeClick = throttle(
 .login {
   padding: 30px 20px 0 20px;
 
-  &-title {
-    font-size: 16px;
-  }
-
   &-tip {
     margin-top: 5px;
-    font-size: 12px;
     color: var(--tip-color);
   }
 
@@ -115,7 +110,6 @@ const handleQrcodeClick = throttle(
     line-height: 30px;
     width: 100%;
     font-weight: 500;
-    font-size: 14px;
   }
 
   &-clear {
@@ -156,10 +150,6 @@ const handleQrcodeClick = throttle(
   &-img {
     display: block;
     .wh(200px);
-  }
-
-  &-tip {
-    font-size: 12px;
   }
 }
 </style>
