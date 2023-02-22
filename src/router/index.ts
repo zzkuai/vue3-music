@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router';
 import { homeRoutes } from './home';
 import { loginRoutes } from './login';
 import { userRoutes } from './user';
+import { playlistRoutes } from './playlist';
 
 const router = createRouter({
   history: createWebHistory('vue3-music'),
@@ -13,6 +14,7 @@ const router = createRouter({
     ...homeRoutes,
     ...userRoutes,
     ...loginRoutes,
+    ...playlistRoutes,
   ],
   scrollBehavior(_to, _from, savedPosition) {
     console.log('savedPosition', savedPosition);

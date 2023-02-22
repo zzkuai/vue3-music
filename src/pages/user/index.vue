@@ -5,25 +5,51 @@ export default {
 </script>
 <script setup lang="ts">
 import { onActivated, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
+import { PlaylistInfo } from '@/typings/playlist';
 
 const { user, getUserInfo } = useUserStore();
+const router = useRouter();
 
 onActivated(getUserInfo);
 
+// 收藏的歌单
+const collect = computed(() => {
+  return user.playlist.filter((i) => i.subscribed);
+});
+
+// 用户创建的歌单
+const list = computed(() => {
+  return user.playlist.filter((i) => !i.subscribed);
+});
+
 // 我喜欢的音乐
 const like = computed(() => {
-  return user.playlist[0] || {};
+  return list.value[0] || {};
 });
 // 创建的歌单
 const create = computed(() => {
-  return user.playlist.slice(1) || [];
+  return list.value.slice(1) || [];
 });
+
+function handleClick(item: PlaylistInfo) {
+  router.push({
+    name: 'PlaylistDetail',
+    params: {
+      id: item.id,
+    },
+  });
+}
 </script>
 <template>
-  <div v-show="user.account.id" class="user">
+  <div class="user">
     <div class="info">
-      <img class="info-avatar" :src="user.profile.avatarUrl" alt="avatar" />
+      <img
+        class="info-avatar"
+        :src="`${user.profile.avatarUrl}?param=180y180`"
+        alt="avatar"
+      />
       <h2 class="info-name">{{ user.profile.nickname }}</h2>
       <ul class="info-tip ft-12">
         <li class="info-tip-item">{{ user.profile.follows }}&nbsp;关注</li>
@@ -33,7 +59,11 @@ const create = computed(() => {
     </div>
     <div class="card">
       <div class="card-left">
-        <img class="card-img" :src="like.coverImgUrl" alt="like" />
+        <img
+          class="card-img"
+          :src="`${like.coverImgUrl}?param=150y150`"
+          alt="like"
+        />
       </div>
       <div class="card-right">
         <h3>我喜欢的音乐</h3>
@@ -43,16 +73,53 @@ const create = computed(() => {
     <div class="card">
       <ul class="list">
         <li class="list-item">
-          <span class="ft-12">创建歌单({{ create.length }}个)</span>
+          <p class="ft-12">创建歌单({{ create.length }}个)</p>
         </li>
-        <li v-for="item in create" :key="item.id" class="list-item">
+        <li
+          v-for="item in create"
+          :key="item.id"
+          class="list-item"
+          @click="handleClick(item)"
+        >
           <div class="card-left">
-            <img :src="item.coverImgUrl" alt="" class="card-img" />
+            <img
+              :src="`${item.coverImgUrl}?param=150y150`"
+              alt=""
+              class="card-img"
+            />
           </div>
           <div class="card-right">
-            <h3>{{ item.name }}</h3>
+            <h3 class="card-title">{{ item.name }}</h3>
             <span class="ft-12 card-tip">{{ item.trackCount }}首</span>
           </div>
+        </li>
+      </ul>
+    </div>
+    <div class="card">
+      <ul class="list">
+        <li class="list-item">
+          <p class="ft-12">
+            收藏歌单
+            <span v-show="collect.length">({{ collect.length }}个)</span>
+          </p>
+        </li>
+        <li v-for="item in collect" :key="item.id" class="list-item">
+          <div class="card-left">
+            <img
+              :src="`${item.coverImgUrl}?param=150y150`"
+              alt=""
+              class="card-img"
+            />
+          </div>
+          <div class="card-right">
+            <h3 class="card-title">{{ item.name }}</h3>
+            <span class="ft-12 card-tip"
+              >{{ item.trackCount }}首, by {{ item.creator.nickname }}</span
+            >
+          </div>
+        </li>
+        <li v-show="!collect.length" class="list-item empty ft-12">
+          暂无收藏的歌单
         </li>
       </ul>
     </div>
@@ -118,12 +185,25 @@ const create = computed(() => {
       border-radius: 8px;
     }
 
+    &-left {
+      min-width: 50px;
+      flex-basis: 50px;
+    }
+
     &-right {
       flex: 1;
       display: flex;
       margin-left: 10px;
+      width: 0;
+      min-width: 0;
       flex-direction: column;
       justify-content: center;
+    }
+
+    &-title {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     &-tip {
@@ -132,8 +212,7 @@ const create = computed(() => {
   }
 
   .list {
-    overflow: hidden;
-
+    width: 100%;
     &-item {
       margin-top: 10px;
       display: flex;
@@ -142,6 +221,12 @@ const create = computed(() => {
       &:first-child {
         margin-top: 0;
         color: var(--tip-color);
+      }
+
+      &.empty {
+        justify-content: center;
+        color: var(--tip-color);
+        padding: 15px;
       }
     }
   }

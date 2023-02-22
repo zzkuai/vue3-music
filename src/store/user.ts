@@ -5,7 +5,9 @@ import {
   getUserPlaylist,
 } from '@/http/api/user';
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { reactive, inject } from 'vue';
+import { KEY_SET_LOADING } from '@/utils/keys';
+import { SetLoading } from '@/typings/common';
 
 type UserInfo = User & UserAccount & UserDetail & UserPlaylist;
 
@@ -26,6 +28,7 @@ export const useUserStore = defineStore('user', () => {
     },
     playlist: [],
   });
+  const setLoading = inject(KEY_SET_LOADING) as SetLoading;
 
   function setUser(data: Partial<UserInfo>) {
     Object.assign(user, data);
@@ -33,11 +36,13 @@ export const useUserStore = defineStore('user', () => {
 
   async function getUserInfo() {
     if (user.account.id) return;
+    setLoading(true);
     const { account, profile } = await getUserAccount();
     const result = await Promise.all([
       getUserDetail(account.id),
       getUserPlaylist(account.id),
     ]);
+    setLoading(false);
     const { level, profile: detailProfile } = result[0];
     const { playlist } = result[1];
     setUser({

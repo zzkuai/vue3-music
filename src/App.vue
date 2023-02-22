@@ -10,7 +10,7 @@ const { loadingVisible } = useLoading();
 <template>
   <router-view v-slot="{ Component }">
     <keep-alive>
-      <component :is="Component" />
+      <component :is="Component" v-show="!loadingVisible" />
     </keep-alive>
   </router-view>
 

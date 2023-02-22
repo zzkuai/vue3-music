@@ -9,7 +9,7 @@ interface Account {
   createTime: number;
 }
 
-interface Profile {
+export interface Profile {
   avatarUrl: string;
   nickname: string;
   signature: string;
